@@ -1,74 +1,156 @@
+from docx import Document
 
-with open('2.txt', 'r') as f:
+
+
+with open('Sistema de Pedidos da Cesta Camponesa 01 29-01-2020.txt', 'r') as f:
     data = f.read()
 
+Tipos_de_linha = ["Lixo", "Núcleo", "Endereço", "Itens_Tabela", "Venda", "Total", "Vazia"]
+
+# class Venda:
+#     def __init__(self, Fornecedor, Produto, Unidade, Valor, Qtd, Total, Entregue, Valor_Pago, Comentarios):
 
 
 
+class Pedido:
+    def __init__(self, Nucleo, Data, Nome, Telefone, Endereco, Vendas, Total):
+        self.Nucleo = Nucleo
+        self.Data = Data
+        self.Nome = Nome
+        self.Telefone = Telefone
+        self.Endereco = Endereco
+        self.Vendas = Vendas
+        self.Total = Total
 
-linetypes = ["endereço", "Categorias", "ItemVendido", "Total"]
+def getInfo(str):
+    Nome = ""
+    i = 0
+    while str[i] != "-":
+        Nome += str[i]
+        i += 1
+    i += 7
+    Tel = ""
+    while str[i] != "E":
+        Tel += str[i]
+        i +=1
+    i += 4
+    if i == len(str):
+        pass
+    End = ""
+    i += 2
+    while i < len(str):
+        End += str[i]
+        i += 1
 
-linhas_End = []
-linhas_Item = []
+    return [Nome, Tel, End]
 
-# def split_type(str):
-#     if "Total" in str:
+def getTotal(str):
+    i = 0
+    total = ""
+    while str[i] != ":":
+        i += 1
+    i += 2
+    while i < len(str):
+        if str[i] != "-":
+            total += str[i]
+        i += 1
+    return total
+
+data = data[1200:]
 
 
-rota = []
+Linhas = []
 
-lines = []
-line = ""
+linha = ""
 
 for x in data:
     if x != "\n":
-        line += x
+        linha += x
     else:
-        lines.append(line)
-        line = ""
-
-# lines = lines[34:]
-del lines[-11:]
-
-tipo_da_cesta = [lines[34]]
-lines = lines[35:]
-print(tipo_da_cesta)
-Vendas = []
+        Linhas.append(linha)
+        linha = ""
 
 
 
-def isend(str):
-    if "Tel" in str:
-        return True
-    return False
+while "" in Linhas:
+    Linhas.remove("")
+while " " in Linhas:
+    Linhas.remove(" ")
 
-enderecos = []
+Pedidos = []
+pedido = []
 
-for i in range(len(lines)):
-    if isend(lines[i]) == True:
-        enderecos.append(lines[i])
-        enderecos.append(lines[i + 1])
-
-
-
-
-
-def limpa2(str):
-    if "Forn" in str:
-        return False
-    return True
-
-enderecosfinal = []
-
-for end in enderecos:
-    if limpa2(end) == True:
-        enderecosfinal.append(end)
+for x in Linhas:
+    pedido.append(x)
+    if "TOTAL" in x:
+        Pedidos.append(pedido)
+        pedido = []
 
 
 
+# for x in Linhas:
+#     if "TOTAL" not in x:
+#         pedido.append(x)
+#     else:
+#         pedido.append(x)
+#         Pedidos.append(pedido)
+#         pedido = []
 
-Rota = open("rota.txt","w+")
-for x in enderecosfinal:
-    Rota.write(x + "\n")
+while [] in Pedidos:
+    Pedidos.remove([])
 
-print(lines)
+# for i in range(len(Pedidos)):
+#     print(Pedidos[i])
+
+# def isItems(str):
+#     if "Fornecedor" in str:
+#         return True
+#     return False
+
+if "Núcleo" in Pedidos[0][0]:
+
+    Nucleo = Pedidos[0][0]
+    Pedidos[0].remove(Pedidos[0][0])
+
+for x in Pedidos:
+    if len(x) > 1:
+        if "Fornecedor" in x[2]:
+            x[0] +=  " " + x[1]
+            x.remove(x[1])
+
+
+
+# X = Pedido(Nucleo, 2, Nome, Telefone, Endereco, Vendas, Total)
+
+
+
+def make_Controle(pedido):
+    if len(pedido) > 1:
+        return getInfo(pedido[0]) + [getTotal(pedido[-1])] + [" "]
+    else:
+        return ["TOTAL GERAL", "", "", "", ""]
+
+
+
+Controle = [[Nucleo, "", "", "", ""], ["Nome", "Tel", "End", "Valor", "OBS"]]
+
+for pedido in Pedidos:
+    Controle.append(make_Controle(pedido))
+
+for coisa in Controle:
+    print(coisa)
+
+
+document = Document()
+r = len(Controle) # Number of rows you want
+c = 5 # Number of collumns you want
+table = document.add_table(rows=r, cols=c)
+table.style = 'LightShading-Accent1' # set your style, look at the help documentation for more help
+
+for x in range(r):
+    for y in range(c):
+        cell = table.cell(x, y)
+        cell.text = Controle[x][y]
+document.save('Andreza.docx') # Save document
+
+
