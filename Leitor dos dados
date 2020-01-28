@@ -1,0 +1,74 @@
+
+with open('2.txt', 'r') as f:
+    data = f.read()
+
+
+
+
+
+linetypes = ["endereço", "Categorias", "ItemVendido", "Total"]
+
+linhas_End = []
+linhas_Item = []
+
+# def split_type(str):
+#     if "Total" in str:
+
+
+rota = []
+
+lines = []
+line = ""
+
+for x in data:
+    if x != "\n":
+        line += x
+    else:
+        lines.append(line)
+        line = ""
+
+# lines = lines[34:]
+del lines[-11:]
+
+tipo_da_cesta = [lines[34]]
+lines = lines[35:]
+print(tipo_da_cesta)
+Vendas = []
+
+
+
+def isend(str):
+    if "Tel" in str:
+        return True
+    return False
+
+enderecos = []
+
+for i in range(len(lines)):
+    if isend(lines[i]) == True:
+        enderecos.append(lines[i])
+        enderecos.append(lines[i + 1])
+
+
+
+
+
+def limpa2(str):
+    if "Forn" in str:
+        return False
+    return True
+
+enderecosfinal = []
+
+for end in enderecos:
+    if limpa2(end) == True:
+        enderecosfinal.append(end)
+
+
+
+
+Rota = open("rota.txt","w+")
+for x in enderecosfinal:
+    Rota.write(x + "\n")
+
+print(lines)
